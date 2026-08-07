@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -11,6 +13,8 @@ public class PlayerController : MonoBehaviour
         public LayerMask WhatIsGround;
 
         //Vars
+        public bool grounded;
+        public int framesSinceGrounded = 0;
         public float mouseSensitivity;
         public float accelSpeed;
         public float maxSpeed;
@@ -31,12 +35,25 @@ public class PlayerController : MonoBehaviour
         KeyMappings.move_right = KeyCode.D;
         KeyMappings.move_jump = KeyCode.Space;
         KeyMappings.move_crouch = KeyCode.LeftControl;
+
+        //TEMP: mouse look gooderer
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
     {
         FetchInputs();
         CameraControl();
+        
+    }
+
+    private void FixedUpdate()
+    {
+        framesSinceGrounded++;
+        if (framesSinceGrounded > 1)
+            grounded = false;
+
         Movement();
     }
 
@@ -63,10 +80,14 @@ public class PlayerController : MonoBehaviour
     void Movement()
     {
         Vector3 relativeVelocity = Quaternion.Inverse(Orientation.rotation) * PlayerRigidbody.linearVelocity;
-        Debug.Log(relativeVelocity);
+        //Debug.Log(relativeVelocity);
 
         //check if player mag is too fast
         //cancel inputs going in too fast direction
+        if ((relativeVelocity.z > maxSpeed && xInput > 0f) || (relativeVelocity.z < -maxSpeed && xInput < 0f))
+            xInput = 0f;
+        if ((relativeVelocity.x > maxSpeed && yInput > 0f) || (relativeVelocity.x < -maxSpeed && yInput < 0f))
+            yInput = 0f;
         //move player in forward direction by xInput
         PlayerRigidbody.AddForce(Orientation.forward * xInput * accelSpeed * Time.deltaTime);
         //move player in right direction by yInput
@@ -76,5 +97,17 @@ public class PlayerController : MonoBehaviour
 
         
         //PlayerRigidbody.AddForce(Orientation.forward * ())
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if(collision.collider.gameObject.layer == 6)
+        {  
+            if (Vector3.Dot(Vector3.up, collision.contacts[0].normal) > 0.5f)
+            {
+                grounded = true;
+                framesSinceGrounded = 0;
+            }
+        }
     }
 }
