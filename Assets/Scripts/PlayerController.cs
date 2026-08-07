@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
             grounded = false;
 
         Movement();
+
     }
 
     void CameraControl()
