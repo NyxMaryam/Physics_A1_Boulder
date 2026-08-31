@@ -223,12 +223,17 @@ MonoBehaviour:
   WhatIsGround:
     serializedVersion: 2
     m_Bits: 64
+  WhatIsProjectile:
+    serializedVersion: 2
+    m_Bits: 128
   grounded: 0
   framesSinceGrounded: 0
   mouseSensitivity: 1000
-  accelSpeed: 1850
+  accelSpeed: 5000
   maxSpeed: 12
-  frictionStrength: 0
+  counterMovement: 0.1
+  counterMovementThreshold: 0
+  BasicRock: {fileID: 8232787979479028256, guid: ba734cd416e490446b0a4e2b77cd8a9d, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
